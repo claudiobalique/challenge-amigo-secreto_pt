@@ -9,36 +9,65 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@100;400;700;900&family=Merriweather:ital,wght@0,300;0,400;0,700;0,900;1,300;1,400;1,700;1,900&display=swap" rel="stylesheet">
     <title>Amigo Secreto</title>
     <SCRIPT>
+			// Cria variavel para alimentar Vettor
+				var amigoSecreto = [];   // Lista do Amigo secreto
+				var amigoSecretoSorteio = [];  // lista dos amigos para sorteio
 
-        // Teste de subida de versão para ver se vai dar certo
-        // Cria variavel para alimentar Vettor
-        var amigoSecreto = [];
-        // Função para incluir amigos secretos diados
-function incluiLiNaLista(amigoDigitado){
-        // Criando um novo elemento <li>
-        const novoItem = document.createElement("li");
-        novoItem.innerText = amigoDigitado;  // Adiciona o nome do amigo
-
-        // Adiciona o <li> à <ul> com ID "listaAmigos"
-        document.getElementById("listaAmigos").appendChild(novoItem);
- }
-
-function adicionarAmigo() {
-    var amigoDigitado = document.getElementById("amigo").value.trim();  // Remove espaços extras
-
-    if (amigoDigitado.length < 2) {   // Não permite menos que duas letras no nome do amigo
-        alert("O nome do amigo secreto deve ter pelo menos duas letras.");
-    } else if (amigoSecreto.includes(amigoDigitado)) {  // Verifica se o nome já foi adicionado
-		alert(amigoDigitado+" já foi adicionado à lista dos amigos secreto.");
-    } else {
-        amigoSecreto.push(amigoDigitado);   // Adiciona ao array
-		incluiLiNaLista(amigoDigitado);
-    }
-
-    document.getElementById("amigo").value = '';   // Limpa o campo de entrada
-    document.getElementById("amigo").focus();   // Foca no campo de entrada novamente
-}
+		// Função para verificar e adicionar o amigo digitado na lista de amigos e na de sorteio.
+		function adicionarAmigo() {
+				var amigoDigitado = document.getElementById("amigo").value.trim();  // Remove espaços extras
+				if (amigoDigitado.length < 2) {   // Não permite menos que duas letras no nome do amigo
+					alert("O nome do amigo secreto deve ter pelo menos duas letras.");
+				} else if (amigoSecreto.includes(amigoDigitado)) {  // Verifica se o nome já foi adicionado
+						   alert(amigoDigitado+" já foi adicionado à lista dos amigos secreto.");
+					} else {
+							amigoSecreto.push(amigoDigitado);   // Adiciona ao array para listar amigos
+							amigoSecretoSorteio.push(amigoDigitado); // Adiciona ao array para sortear amigos
+							incluiLiNaLista(amigoDigitado);
+						}
+				document.getElementById("amigo").value = '';   // Limpa o campo de entrada
+				document.getElementById("amigo").focus();   // Foca no campo de entrada novamente
+			}
+		// Função para incluir amigos secretos digitados
+		function incluiLiNaLista(amigoDigitado){
+			// Criando um novo elemento <li>
+				const novoItem = document.createElement("li");
+				novoItem.innerText = amigoDigitado;  // Adiciona o nome do amigo
+			// Adiciona o <li> à <ul> com ID "listaAmigos"
+				document.getElementById("listaAmigos").appendChild(novoItem);
+		 }
+		// Função sortear os Amigos
+		function sortearAmigo(amigoSecretoSorteio,amigoSecreto) {
+				var qtdAmigos=amigoSecreto.length;   // Verifica se tem pelo menos 3 amigos na lista para inciar sorteido
+				if (qtdAmigos < 3) {
+					alert("Sorteio de amigo secreto tem que ter pelo três nomes! Tem "+qtdAmigos+"!");
+					return;
+				}
+				var qtdAmigosFaltaSortear=amigoSecretoSorteio.length;    // Verifica se ainda tem amigos para sortear
+				if (qtdAmigosFaltaSortear < 1) {
+					alert("Todos Amigos já foram sorteados!");
+					return;
+					}
+				else{
+					document.getElementById("amigo").disabled = true; // Desabilita campo de inclusão após inciar o sorteio
+					document.getElementById("adicionar").disabled = true; // Desabilita botão de adicionar amigo
+					}
+				const indiceAleatorio = Math.floor(Math.random() * qtdAmigosFaltaSortear); // Faz o sorteio do amigo
+				var amigoSorteado = amigoSecretoSorteio[indiceAleatorio];
+			// Remove o amigo sorteado da lista
+				amigoSecretoSorteio.splice(indiceAleatorio, 1);   // Exclui o amigo sorteado da lista para não ser sorteado novamente
+				incluiLiNaListaSorteio(amigoSorteado);
+		}
+		// Função para listar os Amigos Sorteados
+		function incluiLiNaListaSorteio(amigoSorteado){
+			// Criando um novo elemento <li>
+				const novoItem = document.createElement("li");
+				novoItem.innerText = amigoSorteado;  // Adiciona o nome do amigo
+			// Adiciona o <li> à <ul> com ID "resultado"
+				document.getElementById("resultado").appendChild(novoItem);
+		 }        
    </SCRIPT>    
+
 </head>
 
 <body>
@@ -52,14 +81,14 @@ function adicionarAmigo() {
             <h2 class="section-title">Digite o nome dos seus amigos</h2>
             <div class="input-wrapper">
                 <input type="text" id="amigo" class="input-name" placeholder="Digite um nome">
-                <button class="button-add" onclick="adicionarAmigo()">Adicionar</button>
+                <button class="button-add" id="adicionar" onclick="adicionarAmigo()">Adicionar</button>
             </div>
            
             <ul id="listaAmigos" class="name-list" aria-labelledby="listaAmigos" role="list"></ul>
             <ul id="resultado" class="result-list" aria-live="polite"></ul>
 
             <div class="button-container">
-                <button class="button-draw" onclick="sortearAmigo()" aria-label="Sortear amigo secreto">
+                <button class="button-draw" onclick="sortearAmigo(amigoSecretoSorteio,amigoSecreto)" aria-label="Sortear amigo secreto">
                     <img src="assets/play_circle_outline.png" alt="Ícone para sortear">
                     Sortear amigo
                 </button>
